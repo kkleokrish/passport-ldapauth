@@ -1,27 +1,11 @@
 # passport-ldapauth
 
-[Passport](http://passportjs.org/) authentication strategy against LDAP server. This module is a Passport strategy wrapper for [ldapauth-fork](https://github.com/vesse/node-ldapauth-fork)
+[Passport](http://passportjs.org/) authentication strategy against LDAP server. This module is a Passport strategy wrapper for [ldapauth-fork](https://github.com/vesse/node-ldapauth-fork). There are two ways to authenticate with LDAP - 
 
-## Node v0.12
+1) Bind-Search-Bind - Binding with an admin user and searching for the user trying to login to get his DN and use that to login
+2) Direct Bind - Use a predefined DN pattern in which the user principal (username) is filled in to obtain a complete DN and bind with that
 
-### `dtrace-provider` issue
-
-Currently the latest released version of [ldapjs](https://github.com/mcavage/node-ldapjs) which this module depends on does not install succesfully on Node v0.12 on Mac (see [issue #258](https://github.com/mcavage/node-ldapjs/issues/258)) due to old `dtrace-provider` dependency. To work around the issue, add dependency to `ldapjs` master to your `package.json`:
-
-```json
-{
-  "dependencies": {
-    "ldapjs": "mcavage/node-ldapjs",
-    "passport-ldapauth": "0.3.0"
-  }
-}
-```
-
-`dtrace-provider` is an optional dependency, ie. if you don't need it there's no need to do anything.
-
-### SSL issue
-
-This also comes form `ldapjs` (see [issue #258](https://github.com/mcavage/node-ldapjs/issues/258)), and the same workaround solves it.
+This fork attempts to provide an authentication similar to `Direct Bind`, but actually doing `Bind-Search-Bind` with the user's credentials rather than an admin credential. LDAP Auth needs to be enhanced to support pure direct bind. Once that is done, then this will become real direct bind. 
 
 ## Install
 
@@ -59,6 +43,7 @@ passport.use(new LdapStrategy({
     * `tlsOptions`: Optional object with options accepted by Node.js [tls](http://nodejs.org/api/tls.html#tls_tls_connect_options_callback) module.
 * `usernameField`: Field name where the username is found, defaults to _username_
 * `passwordField`: Field name where the password is found, defaults to _password_
+* `useDirectBind`: Use direct bind instead of Bind-Search-Bind
 * `passReqToCallback`: When `true`, `req` is the first argument to the verify callback (default: `false`):
 
         passport.use(new LdapStrategy(..., function(req, user, done) {
@@ -143,7 +128,7 @@ var opts = {
 <a name="options-as-function"></a>
 ## Asynchronous configuration retrieval
 
-Instead of providing a static configuration object, you can pass a function as `options` that will take care of fetching the configuration. It will be called with the `req` object and a callback function having the standard `(err, result)` signature. Notice that the provided function will be called on every authenticate request.
+Instead of providing a static configuration object, you can pass a function as `options` that will take care of fetching the configuration. It will be called with the and a callback function having the standard `(err, result)` signature. Notice that the provided function will be called on every authenticate request.
 
 ```javascript
 var getLDAPConfiguration = function(req, callback) {
