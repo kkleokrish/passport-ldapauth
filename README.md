@@ -2,8 +2,8 @@
 
 [Passport](http://passportjs.org/) authentication strategy against LDAP server. This module is a Passport strategy wrapper for [ldapauth-fork](https://github.com/vesse/node-ldapauth-fork). There are two ways to authenticate with LDAP - 
 
-1) Bind-Search-Bind - Binding with an admin user and searching for the user trying to login to get his DN and use that to login
-2) Direct Bind - Use a predefined DN pattern in which the user principal (username) is filled in to obtain a complete DN and bind with that
+1. Bind-Search-Bind - Binding with an admin user and searching for the user trying to login to get his DN and use that to login
+2. Direct Bind - Use a predefined DN pattern in which the user principal (username) is filled in to obtain a complete DN and bind with that
 
 This fork attempts to provide an authentication similar to `Direct Bind`, but actually doing `Bind-Search-Bind` with the user's credentials rather than an admin credential. LDAP Auth needs to be enhanced to support pure direct bind. Once that is done, then this will become real direct bind. 
 
